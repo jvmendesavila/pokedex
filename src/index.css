@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  background-color: #181c1d;
+  padding: 0 !important;
+  overflow: auto !important;
+  font-family: "Muli" !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
