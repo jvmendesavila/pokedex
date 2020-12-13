@@ -7,7 +7,7 @@ import { FastField, Formik } from "formik";
 
 // Apollo
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
 const GET_POKEMON = gql`
   query GetPokemon($search: String!) {
@@ -38,9 +38,15 @@ const GET_POKEMON = gql`
   }
 `;
 
-export default function Search({ setPokemons, allPokemons }) {
-  const formikRef = useRef();
+const MUTATION_FETCH_POKEMONS = gql`
+  mutation($pokemons: PokemonInput!) {
+    fetchPokemons(pokemons: $pokemons) @client
+  }
+`;
+
+export default function Search({ allPokemons }) {
   const [search, setSearch] = useState("");
+  const [fetchPokemons] = useMutation(MUTATION_FETCH_POKEMONS);
   const initialValues = {
     search: "",
   };
@@ -57,12 +63,14 @@ export default function Search({ setPokemons, allPokemons }) {
   useEffect(() => {
     if (!loading) {
       if (search) {
-        setPokemons(data.pokemon ? [{ ...data.pokemon }] : null);
+        fetchPokemons({
+          variables: { pokemons: data.pokemon ? [{ ...data.pokemon }] : [] },
+        });
       } else {
-        setPokemons(allPokemons);
+        fetchPokemons({ variables: { pokemons: allPokemons } });
       }
     }
-  }, [data, loading, search, setPokemons]);
+  }, [data, loading, search, allPokemons, fetchPokemons]);
 
   return (
     <Grid
@@ -82,7 +90,6 @@ export default function Search({ setPokemons, allPokemons }) {
             name={"search"}
             label="Pokémon"
             placeholder="Buscar"
-            innerRef={formikRef}
             onChangeValue={onChange}
             style={{ color: "red !important" }}
             component={CustomTextField}

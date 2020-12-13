@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 // Apollo
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
 // Material UI
 import { Grid } from "@material-ui/core";
@@ -12,7 +12,6 @@ import PokemonItem from "./pokemonItem/PokemonItem";
 
 // Images
 import background from "../../assets/img/background.jpeg";
-import CustomTextField from "../CustomTextField/CustomTextField";
 import Search from "./Search";
 
 const GET_POKEMONS = gql`
@@ -26,18 +25,36 @@ const GET_POKEMONS = gql`
   }
 `;
 
+export const GET_POKEMONS_CLIENT = gql`
+  query {
+    state @client {
+      fetch {
+        pokemons
+      }
+    }
+  }
+`;
+
+const MUTATION_FETCH_POKEMONS = gql`
+  mutation($pokemons: PokemonInput!) {
+    fetchPokemons(pokemons: $pokemons) @client
+  }
+`;
+
 // render all items available in our demo store
 export function Pokemons() {
-  const [pokemons, setPokemons] = useState(null);
   const [allPokemons, setAllPokemons] = useState(null);
   const { data, loading, error } = useQuery(GET_POKEMONS);
+  const [fetchPokemons] = useMutation(MUTATION_FETCH_POKEMONS);
+  const { data: dataCliente } = useQuery(GET_POKEMONS_CLIENT);
+  const pokemons = dataCliente.state.fetch.pokemons;
 
   useEffect(() => {
     if (!loading && !error) {
-      setPokemons(data.pokemons);
       setAllPokemons(data.pokemons);
+      fetchPokemons({ variables: { pokemons: data.pokemons } });
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, fetchPokemons]);
 
   return (
     <Grid
@@ -51,12 +68,12 @@ export function Pokemons() {
         backgroundPosition: "center",
       }}
     >
-      <Search setPokemons={setPokemons} allPokemons={allPokemons} />
+      <Search allPokemons={allPokemons} />
       <Grid
         container
         style={{ minHeight: "calc(100vh - 120px)", margin: "48px 0px" }}
       >
-        {pokemons?.length > 0 &&
+        {pokemons.length > 0 &&
           pokemons.map((item) => <PokemonItem key={item.id} {...item} />)}
       </Grid>
     </Grid>

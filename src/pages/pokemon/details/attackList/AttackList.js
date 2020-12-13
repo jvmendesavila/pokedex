@@ -27,8 +27,8 @@ export default function AttackList({ attackList }) {
         </Grid>
 
         <Grid container>
-          {attackList.map((attack) => (
-            <Grid container style={{ margin: "12px 0px" }}>
+          {attackList.map((attack, i) => (
+            <Grid key={i} container style={{ margin: "12px 0px" }}>
               <Grid container justify="center" alignItems="center">
                 {/* Attack Name */}
                 <Typography

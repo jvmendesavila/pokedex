@@ -3,7 +3,7 @@ import ApolloClient, { InMemoryCache } from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { persistCache } from "apollo-cache-persist";
 //
-import { resolvers } from "../modules/resolvers";
+import { resolvers } from "../resolvers/index";
 
 const cache = new InMemoryCache({});
 
@@ -12,7 +12,17 @@ const client = new ApolloClient({
   cache: cache,
   clientState: {
     defaults: {
-      pokemons: [],
+      state: {
+        fetch: {
+          pokemons: [],
+          __typename: "FetchPokemons",
+        },
+        custom: {
+          pokemons: [],
+          __typename: "CustomPokemons",
+        },
+        __typename: "State",
+      },
     },
     resolvers: resolvers,
   },
