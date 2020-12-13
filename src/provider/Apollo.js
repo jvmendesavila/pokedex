@@ -8,7 +8,7 @@ import { resolvers } from "../resolvers/index";
 const cache = new InMemoryCache({});
 
 const client = new ApolloClient({
-  uri: "http://localhost:5000/",
+  uri: "https://pokemon-graphql-u876f.ondigitalocean.app/",
   cache: cache,
   clientState: {
     defaults: {

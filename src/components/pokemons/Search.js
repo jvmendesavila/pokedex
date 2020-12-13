@@ -48,7 +48,6 @@ export default function Search({ allPokemons }) {
       findCliente = allPokemons.filter((p) =>
         p.name.toLowerCase().includes(search.toLowerCase())
       );
-      console.log(findCliente);
       if (search) {
         fetchPokemons({
           variables: {
