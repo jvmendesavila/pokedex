@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Material UI
 import { Grid } from "@material-ui/core";
@@ -16,24 +16,6 @@ const GET_POKEMON = gql`
       name
       image
       types
-      height {
-        maximum
-      }
-      weight {
-        maximum
-      }
-      attacks {
-        fast {
-          name
-          type
-          damage
-        }
-        special {
-          name
-          type
-          damage
-        }
-      }
     }
   }
 `;
@@ -61,10 +43,21 @@ export default function Search({ allPokemons }) {
   });
 
   useEffect(() => {
-    if (!loading) {
+    let findCliente = null;
+    if (!loading && allPokemons.length > 0) {
+      findCliente = allPokemons.filter((p) =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      );
+      console.log(findCliente);
       if (search) {
         fetchPokemons({
-          variables: { pokemons: data.pokemon ? [{ ...data.pokemon }] : [] },
+          variables: {
+            pokemons: findCliente
+              ? [...findCliente]
+              : data.pokemon
+              ? [{ ...data.pokemon }]
+              : [],
+          },
         });
       } else {
         fetchPokemons({ variables: { pokemons: allPokemons } });
@@ -89,7 +82,7 @@ export default function Search({ allPokemons }) {
             fullWidth
             name={"search"}
             label="Pokémon"
-            placeholder="Buscar"
+            placeholder="Buscar pelo nome..."
             onChangeValue={onChange}
             style={{ color: "red !important" }}
             component={CustomTextField}

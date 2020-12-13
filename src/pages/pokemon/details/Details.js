@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 // Apollo
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
 // Material UI
 import { Button, Grid, Typography } from "@material-ui/core";
@@ -16,10 +16,11 @@ import AttackList from "./attackList/AttackList";
 import useMedia from "use-media";
 import { FastField, Formik } from "formik";
 import CustomTextField from "../../../components/CustomTextField/CustomTextField";
+import { GET_POKEMONS_CLIENT } from "../../../components/pokemons/Pokemons";
 
 const GET_POKEMON = gql`
-  query GetPokemon($name: String!) {
-    pokemon(name: $name) {
+  query GetPokemon($id: String!) {
+    pokemon(id: $id) {
       id
       name
       image
@@ -46,31 +47,59 @@ const GET_POKEMON = gql`
   }
 `;
 
+const MUTATION_EDIT_POKEMONS = gql`
+  mutation($pokemon: PokemonInput!) {
+    editPokemon(pokemon: $pokemon) @client
+  }
+`;
+
 export default function Details({ match }) {
   const classes = style();
   const [edit, setEdit] = useState(false);
+  const [editPokemon] = useMutation(MUTATION_EDIT_POKEMONS);
   const [pokemon, setPokemon] = useState(null);
-  console.log("aqui");
+  const { data: dataCliente } = useQuery(GET_POKEMONS_CLIENT);
+  const pokemons = dataCliente.state.fetch.pokemons;
   const mdScreen = useMedia({ minWidth: 960 });
 
   //  GET POKEMON
   const { data, loading } = useQuery(GET_POKEMON, {
-    variables: { name: match?.params?.pokemon },
+    variables: { id: match?.params?.pokemon },
   });
+
   const [initialValues, setInitialValues] = useState({
     name: data?.pokemon?.name,
   });
 
   useEffect(() => {
-    if (!loading) {
-      setPokemon(data.pokemon);
-      setInitialValues(data.pokemon);
+    let findCliente = null;
+    if (pokemons) {
+      findCliente = pokemons.filter((p) => p.id === match?.params?.pokemon)[0];
     }
-  }, [loading, data]);
+    if (!loading) {
+      setPokemon({
+        ...data.pokemon,
+        name: findCliente ? findCliente.name : data.pokemon.name,
+      });
+      setInitialValues({
+        ...data.pokemon,
+        name: findCliente ? findCliente.name : data.pokemon.name,
+      });
+    }
+  }, [loading, data, match.params.pokemon, pokemons]);
 
   const onSave = (formik) => {
-    console.log(formik);
-    // setPokemon((pokemon) => {...pokemon, });
+    editPokemon({
+      variables: {
+        pokemon: {
+          id: data.pokemon.id,
+          name: formik.values.name,
+          image: data.pokemon.image,
+          types: data.pokemon.types,
+          __typename: data.pokemon.__typename,
+        },
+      },
+    });
     setEdit((oldState) => !oldState);
   };
 
@@ -110,7 +139,7 @@ export default function Details({ match }) {
                             fullWidth
                             size="medium"
                             style={{ backgroundColor: "#69a95b" }}
-                            onClick={onSave(formik)}
+                            onClick={() => onSave(formik)}
                           >
                             <Typography style={{ color: "white" }}>
                               Salvar
@@ -175,7 +204,7 @@ export default function Details({ match }) {
                           marginBottom: 16,
                         }}
                       >
-                        {pokemon.name}
+                        {formik.values.name}
                       </Typography>
                     )}
                   </Grid>

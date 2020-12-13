@@ -13,6 +13,7 @@ const client = new ApolloClient({
   clientState: {
     defaults: {
       state: {
+        allPokemons: [],
         fetch: {
           pokemons: [],
           __typename: "FetchPokemons",

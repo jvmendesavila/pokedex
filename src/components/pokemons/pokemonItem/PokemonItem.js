@@ -7,11 +7,11 @@ import { typeColor } from "../../../shared/util";
 import style from "./style";
 
 // render an item with some styling
-export default function PokemonItem({ image, name, types }) {
+export default function PokemonItem({ image, name, types, id }) {
   const classes = style();
   return (
     <Grid item xl={2} lg={3} md={4} sm={6} xs={12} container justify="center">
-      <Link to={`/pokemon/${name}`} style={{ textDecoration: "none" }}>
+      <Link to={`/pokemon/${id}`} style={{ textDecoration: "none" }}>
         <Grid
           container
           wrap="nowrap"

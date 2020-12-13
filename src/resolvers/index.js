@@ -18,5 +18,35 @@ export const resolvers = {
 
       return null;
     },
+    fetchAllPokemons: (_, { pokemons }, { cache }) => {
+      cache.writeQuery({
+        query: GET_POKEMONS_CLIENT,
+        data: {
+          state: {
+            allPokemons: pokemons,
+            __typename: "State",
+          },
+        },
+      });
+
+      return null;
+    },
+    editPokemon: (_, { pokemon }, { cache }) => {
+      const { state } = cache.readQuery({ query: GET_POKEMONS_CLIENT });
+      const { allPokemons } = state;
+      cache.writeQuery({
+        query: GET_POKEMONS_CLIENT,
+        data: {
+          state: {
+            allPokemons: [
+              ...allPokemons.map((p) => (p.id === pokemon.id ? pokemon : p)),
+            ],
+            __typename: "State",
+          },
+        },
+      });
+
+      return null;
+    },
   },
 };
