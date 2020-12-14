@@ -18,10 +18,6 @@ const client = new ApolloClient({
           pokemons: [],
           __typename: "FetchPokemons",
         },
-        custom: {
-          pokemons: [],
-          __typename: "CustomPokemons",
-        },
         __typename: "State",
       },
     },
