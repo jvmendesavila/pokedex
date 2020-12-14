@@ -7,7 +7,7 @@ import { typeColor } from "../../../../shared/util";
 // Style
 import style from "./style";
 
-export default function AttackList({ attackList }) {
+export default function AttackList({ attackList, title }) {
   const classes = style();
   return (
     <>
@@ -22,7 +22,7 @@ export default function AttackList({ attackList }) {
               fontSize: 32,
             }}
           >
-            Special Attacks
+            {title}
           </Typography>
         </Grid>
 

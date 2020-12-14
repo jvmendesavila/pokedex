@@ -270,10 +270,16 @@ export default function Details({ match }) {
                   </Grid>
 
                   {/* Fast Attacks */}
-                  <AttackList attackList={pokemon.attacks.fast} />
+                  <AttackList
+                    attackList={pokemon.attacks.fast}
+                    title={"Fast Attacks"}
+                  />
 
                   {/* Special Attacks */}
-                  <AttackList attackList={pokemon.attacks.special} />
+                  <AttackList
+                    attackList={pokemon.attacks.special}
+                    title={"Special Attacks"}
+                  />
                 </Grid>
               </Grid>
             )}
